@@ -1,4 +1,4 @@
-# ⚖ Legal Case Finder
+#  Legal Case Finder
 
 Search past court judgments by **keyword** (PostgreSQL full-text) and by **meaning** (pgvector semantic search). Built for PES University DBMS Experiential Learning – Level 3.
 
