@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 export default function Cases() {
   const [mode, setMode] = useState('keyword');
   const [q, setQ] = useState(''), [court, setCourt] = useState(''), [category, setCategory] = useState('');
+  const [status, setStatus] = useState('');
   const [meta, setMeta] = useState({ courts: [] });
   const [rows, setRows] = useState([]), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
   const cats = ['property','privacy','employment','ip','consumer','environment','contract','family','criminal','medical','tax'];
@@ -14,10 +15,18 @@ export default function Cases() {
     e?.preventDefault(); setErr(''); setBusy(true);
     let r;
     if (mode === 'keyword') {
-      const p = new URLSearchParams(); if (q) p.set('q', q); if (court) p.set('court', court); if (category) p.set('category', category);
+      const p = new URLSearchParams();
+if (q) p.set('q', q);
+if (court) p.set('court', court);
+if (category) p.set('category', category);
+if (status) p.set('status', status);
       r = await fetch('/api/cases?' + p);
     } else {
-      r = await fetch('/api/search/semantic', { method: 'POST', body: JSON.stringify({ query: q, category }) });
+      r = await fetch('/api/search/semantic', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ query: q, category, status })
+});
     }
     const j = await r.json(); setBusy(false);
     if (!r.ok) { setErr(j.error); setRows([]); } else setRows(j);
@@ -39,6 +48,12 @@ export default function Cases() {
             {meta.courts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>}
           <select value={category} onChange={e => setCategory(e.target.value)}><option value="">All categories</option>
             {cats.map(c => <option key={c}>{c}</option>)}</select>
+            <select value={status} onChange={e => setStatus(e.target.value)}>
+  <option value="">All statuses</option>
+  <option value="pending">Pending</option>
+  <option value="decided">Decided</option>
+  <option value="appealed">Appealed</option>
+</select>
           <button disabled={busy}>{busy ? 'Searching…' : 'Search'}</button>
         </div>
       </form>
