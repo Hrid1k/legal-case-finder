@@ -92,10 +92,10 @@ Columns: see section 6. Key constraints: `case_number` unique business key; `sum
 | Vector CRUD | Create on case insert · Read via similarity search · Update: edit re-embeds (`ON CONFLICT DO UPDATE`) · Delete: `ON DELETE CASCADE` |
 
 ## 10. Advanced database features
-View `v_court_stats` · Function `fn_citation_count` · Procedure `assign_case` · Triggers `touch_cases`, `audit_cases`, `audit_assignments`, `validate_assignment` · Transactions (case + embedding; every request) · Recursive CTE (citation chain) · Full-text search (GIN) · Vector similarity (HNSW) · Indexes · RBAC roles + column GRANTs + Row Level Security.
+Views `v_court_stats`, `v_lawyer_workload` · Function `fn_citation_count` · Procedure `assign_case` · Triggers `touch_cases`, `audit_cases`, `audit_assignments`, `validate_assignment` (takes a `FOR UPDATE` row lock on the lawyer so concurrent assignments cannot break the 5-case limit) · Transactions (case + embedding; every request) · Recursive CTE (citation chain) · Full-text search (GIN) · Vector similarity (HNSW) · Indexes · RBAC roles + column GRANTs + Row Level Security.
 
 ## 11. Important queries
-Correlated subquery (cases cited above their court's average) and GROUP BY/HAVING in `/api/stats`; joins, recursive CTE and vector neighbours in `/api/cases/[id]`; vector search in `/api/search/semantic`; full-text + `ts_rank` in `/api/cases`; INSERT/UPDATE/DELETE across cases, assignments, citations.
+Correlated subquery (cases cited above their court's average) and GROUP BY/HAVING in `/api/stats`; joins, recursive CTE and vector neighbours in `/api/cases/[id]`; vector search with optional category/status filters in `/api/search/semantic`; LEFT JOIN + `COUNT … FILTER` + GROUP BY in view `v_lawyer_workload` (`/api/workload`); full-text + `ts_rank` in `/api/cases`; INSERT/UPDATE/DELETE across cases, assignments, citations.
 
 ## 12. System architecture
 ```
@@ -125,6 +125,8 @@ Browser (Next.js/React) → fetch /api/* (httpOnly JWT cookie)
 | T12 | Vector query plan | uses HNSW index | Pass |
 | T13 | Duplicate case_number / bad status / future date | rejected by constraints | *(run in demo)* |
 | T14 | Query "boss fired me for complaining" | employment case ranks high | *(run after seeding)* |
+| T15 | Admin opens Admin page | Workload table lists every lawyer, incl. those with 0 cases | *(run in demo)* |
+| T16 | Two concurrent 5th-slot assignments for one lawyer | one succeeds, the other fails the trigger | *(run in demo)* |
 
 ## 15. Conclusion and future enhancements
 Relational integrity, full-text search and vector similarity coexist in one PostgreSQL database. Future: PDF ingestion with chunk-level embeddings, hybrid ranking (full-text + vector), Neo4j citation graph, rate limiting, pagination, automated tests.
