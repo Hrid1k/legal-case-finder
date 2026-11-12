@@ -6,9 +6,10 @@ const cats = ['property','privacy','employment','ip','consumer','environment','c
 
 export default function Admin() {
   const [f, setF] = useState(blank), [meta, setMeta] = useState({ courts: [], judges: [] });
-  const [audit, setAudit] = useState([]), [msg, setMsg] = useState(''), [busy, setBusy] = useState(false);
+  const [audit, setAudit] = useState([]), [workload, setWorkload] = useState([]), [msg, setMsg] = useState(''), [busy, setBusy] = useState(false);
   const loadAudit = () => fetch("/api/audit").then(r => r.ok ? r.json() : []).then(setAudit);
-  useEffect(() => { fetch('/api/meta').then(r => r.json()).then(setMeta); loadAudit(); }, []);
+  const loadWorkload = () => fetch('/api/workload').then(r => r.ok ? r.json() : []).then(setWorkload);
+  useEffect(() => { fetch('/api/meta').then(r => r.json()).then(setMeta); loadAudit(); loadWorkload(); }, []);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   async function submit(e) {
     e.preventDefault(); setMsg(''); setBusy(true);
@@ -33,6 +34,11 @@ export default function Admin() {
         <div className="row" style={{ marginTop: 8 }}><button disabled={busy} style={{ flex: 'none' }}>{busy ? 'Saving…' : 'Create case'}</button></div>
         {msg && <div className={msg.startsWith('Error') ? 'err' : 'ok'}>{msg}</div>}
       </form></div>
+    <div className="card"><h2>Lawyer workload <span className="muted">(VIEW v_lawyer_workload, max 5 active)</span></h2>
+      <table><thead><tr><th>Lawyer</th><th>Active</th><th>Completed</th><th>Free slots</th><th>Last assigned</th></tr></thead>
+        <tbody>{workload.map(w => <tr key={w.id}><td>{w.name}</td><td>{w.active_cases}</td><td>{w.completed_cases}</td>
+          <td className={w.free_slots == 0 ? 'err' : ''}>{w.free_slots}</td>
+          <td>{w.last_assigned ? new Date(w.last_assigned).toLocaleString() : '—'}</td></tr>)}</tbody></table></div>
     <div className="card"><h2>Audit log <span className="muted">(written by database triggers)</span></h2>
       <table><thead><tr><th>When</th><th>Who</th><th>Table</th><th>Action</th><th>Record</th></tr></thead>
         <tbody>{audit.map(a => <tr key={a.id}><td>{new Date(a.changed_at).toLocaleString()}</td><td>{a.user_name || '—'}</td><td>{a.table_name}</td><td>{a.action}</td><td>{a.details?.case_number || `#${a.record_id}`}</td></tr>)}</tbody></table></div>
