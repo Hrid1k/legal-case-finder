@@ -51,6 +51,9 @@ erDiagram
   ASSIGNMENTS { int id PK  int case_id FK  int lawyer_id FK  string status  timestamp assigned_at }
   AUDIT_LOG { bigint id PK  string table_name  string action  int record_id  int user_id  jsonb details }
 ```
+
+![ER diagram](screenshots/00-er-diagram.png)
+
 Court 1–N Judge; Court 1–N Case; Judge 1–N Case (optional); Case 1–1 Embedding; **Case M–N Case** (citations); **Case M–N User** (assignments, with own attributes). `audit_log` has no FKs on purpose so history survives deletions.
 
 ## 6. Relational schema
