@@ -14,7 +14,7 @@ GRANT USAGE ON SCHEMA public TO legal_admin, legal_lawyer;
 GRANT SELECT, INSERT, UPDATE, DELETE
   ON cases, courts, judges, case_embeddings, case_citations, assignments TO legal_admin;
 GRANT SELECT (id, name, email, role, created_at) ON users TO legal_admin;
-GRANT SELECT ON audit_log, v_court_stats TO legal_admin;
+GRANT SELECT ON audit_log, v_court_stats, v_lawyer_workload TO legal_admin;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO legal_admin;
 
 -- LAWYER : read-only research access; may only update status of own assignments

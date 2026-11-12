@@ -56,7 +56,9 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_role VARCHAR; v_active INT;
 BEGIN
-  SELECT role INTO v_role FROM users WHERE id = NEW.lawyer_id;
+  -- Lock the lawyer's row so two concurrent assignments cannot both pass the
+  -- workload check (prevents a race that would allow a 6th active case).
+  SELECT role INTO v_role FROM users WHERE id = NEW.lawyer_id FOR UPDATE;
   IF v_role IS DISTINCT FROM 'lawyer' THEN
     RAISE EXCEPTION 'User % is not a lawyer', NEW.lawyer_id;
   END IF;
@@ -80,3 +82,15 @@ BEGIN
   END IF;
   INSERT INTO assignments(case_id, lawyer_id) VALUES (p_case, p_lawyer);
 END $$;
+
+-- VIEW : per-lawyer workload (LEFT JOIN keeps lawyers with no assignments)
+CREATE OR REPLACE VIEW v_lawyer_workload AS
+SELECT u.id, u.name,
+       COUNT(a.id) FILTER (WHERE a.status = 'active')    AS active_cases,
+       COUNT(a.id) FILTER (WHERE a.status = 'completed') AS completed_cases,
+       5 - COUNT(a.id) FILTER (WHERE a.status = 'active') AS free_slots,
+       MAX(a.assigned_at)                                 AS last_assigned
+FROM users u
+LEFT JOIN assignments a ON a.lawyer_id = u.id
+WHERE u.role = 'lawyer'
+GROUP BY u.id, u.name;
