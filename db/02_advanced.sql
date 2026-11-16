@@ -112,4 +112,3 @@ END $$;
 
 CREATE TRIGGER check_citation_date BEFORE INSERT ON case_citations
 FOR EACH ROW EXECUTE FUNCTION trg_check_citation_date();
-```
