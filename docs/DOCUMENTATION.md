@@ -109,7 +109,44 @@ Browser (Next.js/React) → fetch /api/* (httpOnly JWT cookie)
 ```
 
 ## 13. Application screenshots
-*(Insert: login, dashboard, keyword search, semantic search, case detail, admin add-case, assignments, audit log)*
+**Login**
+![Login](screenshots/01-login.png)
+
+**Dashboard** – view `v_court_stats`, GROUP BY/HAVING, correlated subquery
+![Dashboard](screenshots/02-dashboard.png)
+
+**Keyword search** – full-text search with `ts_rank`
+![Keyword search](screenshots/03-keyword-search.png)
+
+**Semantic search** – pgvector cosine similarity
+![Semantic search](screenshots/04-semantic-search.png)
+
+**Case detail** – recursive CTE citation chain + vector nearest neighbours
+![Case detail](screenshots/05-case-detail.png)
+
+**Admin – add case** (case + embedding inserted in one transaction)
+![Add case](screenshots/06-add-case.png)
+
+**Admin – lawyer workload** (view `v_lawyer_workload`)
+![Lawyer workload](screenshots/07-workload.png)
+
+**Admin – audit log** (written by triggers)
+![Audit log](screenshots/08-audit-log.png)
+
+**Assignments – admin view** (all rows)
+![Assignments admin](screenshots/09-assignments-admin.png)
+
+**My cases – lawyer view** (Row Level Security: only own rows, no Admin menu)
+![Lawyer my cases](screenshots/10-lawyer-my-cases.png)
+
+**Lawyer calling an admin-only API** → 403
+![Lawyer blocked](screenshots/11-lawyer-blocked.png)
+
+**Duplicate case number rejected** by UNIQUE constraint
+![Duplicate error](screenshots/12-duplicate-error.png)
+
+**6th active assignment rejected** by trigger `validate_assignment`
+![Workload limit](screenshots/13-workload-limit.png)
 
 ## 14. Testing results
 | # | Test | Expected | Result |
@@ -126,9 +163,9 @@ Browser (Next.js/React) → fetch /api/* (httpOnly JWT cookie)
 | T10 | Assign case to an admin user | "is not a lawyer" | Pass |
 | T11 | Citation cycle 1→2→3→1 in recursive CTE | terminates | Pass |
 | T12 | Vector query plan | uses HNSW index | Pass |
-| T13 | Duplicate case_number / bad status / future date | rejected by constraints | *(run in demo)* |
-| T14 | Query "boss fired me for complaining" | employment case ranks high | *(run after seeding)* |
-| T15 | Admin opens Admin page | Workload table lists every lawyer, incl. those with 0 cases | *(run in demo)* |
+| T13 | Duplicate case_number / bad status / future date | rejected by constraints | Pass |
+| T14 | Query "boss fired me for complaining" | employment case ranks high | Pass (ranked 1st) |
+| T15 | Admin opens Admin page | Workload table lists every lawyer, incl. those with 0 cases | Pass |
 | T16 | Two concurrent 5th-slot assignments for one lawyer | one succeeds, the other fails the trigger | *(run in demo)* |
 
 ## 15. Conclusion and future enhancements
