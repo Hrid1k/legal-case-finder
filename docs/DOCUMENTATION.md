@@ -167,6 +167,8 @@ Browser (Next.js/React) → fetch /api/* (httpOnly JWT cookie)
 | T14 | Query "boss fired me for complaining" | employment case ranks high | Pass (ranked 1st) |
 | T15 | Admin opens Admin page | Workload table lists every lawyer, incl. those with 0 cases | Pass |
 | T16 | Two concurrent 5th-slot assignments for one lawyer | one succeeds, the other fails the trigger | *(run in demo)* |
+| T17 | Case cites a judgment decided after it | trigger error | Pass |
+| T18 | Admin edits a case summary | case updated, embedding regenerated, similar cases change | Pass |
 
 ## 15. Conclusion and future enhancements
 Relational integrity, full-text search and vector similarity coexist in one PostgreSQL database. Future: PDF ingestion with chunk-level embeddings, hybrid ranking (full-text + vector), Neo4j citation graph, rate limiting, pagination, automated tests.
