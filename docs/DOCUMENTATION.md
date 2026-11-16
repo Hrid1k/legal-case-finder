@@ -1,6 +1,6 @@
 # Legal Case Finder – Project Documentation
 *DBMS Experiential Learning Level 3 · PES University · Aug–Dec 2026*
-Team: **Joel Thomas (PES1UG24CS203)**, **Hridik Thakare (PES1UG24CS190)** · Section: **[__]** · GitHub: **https://github.com/Hrid1k/legal-case-finder**
+Team: **Joel Thomas (PES1UG24CS203)**, **Hridik Thakare (PES1UG24CS190)** · Section: **5D** · GitHub: **https://github.com/Hrid1k/legal-case-finder**
 
 ## 1. Problem statement
 Lawyers and clerks research precedent by keyword search, which fails when the same legal idea is phrased differently ("wrongful dismissal" vs "retaliatory termination"). They also lose track of who is handling which case and who changed what. This system supports exact keyword search and **meaning-based search**, tracks citation relationships between judgments, manages case assignments with workload rules, and keeps an audit trail.
