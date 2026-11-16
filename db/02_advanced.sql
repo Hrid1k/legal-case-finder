@@ -94,3 +94,22 @@ FROM users u
 LEFT JOIN assignments a ON a.lawyer_id = u.id
 WHERE u.role = 'lawyer'
 GROUP BY u.id, u.name;
+
+
+-- TRIGGER 4 : a case may only cite judgments decided on or before its own date
+CREATE OR REPLACE FUNCTION trg_check_citation_date() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_citing DATE; v_cited DATE;
+BEGIN
+  SELECT decided_on INTO v_citing FROM cases WHERE id = NEW.citing_case_id;
+  SELECT decided_on INTO v_cited  FROM cases WHERE id = NEW.cited_case_id;
+  IF v_citing IS NOT NULL AND v_cited IS NOT NULL AND v_cited > v_citing THEN
+    RAISE EXCEPTION 'A case cannot cite a judgment decided after it (% is later than %)', v_cited, v_citing;
+  END IF;
+  RETURN NEW;
+END $$;
+
+CREATE TRIGGER check_citation_date BEFORE INSERT ON case_citations
+FOR EACH ROW EXECUTE FUNCTION trg_check_citation_date();
+```
