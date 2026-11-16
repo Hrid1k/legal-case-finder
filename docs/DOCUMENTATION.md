@@ -1,6 +1,6 @@
 # Legal Case Finder – Project Documentation
 *DBMS Experiential Learning Level 3 · PES University · Aug–Dec 2026*
-Team: **[Member 1, SRN]**, **[Member 2, SRN]** · Section: **[__]** · GitHub: **[repo URL]**
+Team: **Joel Thomas (PES1UG24CS203)**, **Hridik Thakare (PES1UG24CS190)** · Section: **[__]** · GitHub: **https://github.com/Hrid1k/legal-case-finder**
 
 ## 1. Problem statement
 Lawyers and clerks research precedent by keyword search, which fails when the same legal idea is phrased differently ("wrongful dismissal" vs "retaliatory termination"). They also lose track of who is handling which case and who changed what. This system supports exact keyword search and **meaning-based search**, tracks citation relationships between judgments, manages case assignments with workload rules, and keeps an audit trail.
@@ -174,6 +174,5 @@ Relational integrity, full-text search and vector similarity coexist in one Post
 ## 16. Individual contributions
 | Member | Responsibility |
 |---|---|
-| **[Member 1]** | ER design, DDL, triggers/procedure/view, RBAC & RLS, SQL queries, DB testing |
-| **[Member 2]** | Next.js UI, route handlers, auth/session, embeddings + semantic search, seed data, README |
-Both must have commits in both layers (the rubric requires it) — check the Git history shows that.
+| **Hridik Thakare** (PES1UG24CS190) | Initial system build: schema DDL with constraints and indexes, view `v_court_stats`, function `fn_citation_count`, audit and assignment-validation triggers, procedure `assign_case`, DB roles + Row Level Security; Next.js pages and route handlers, JWT/bcrypt authentication, embeddings + semantic search, seed data, README |
+| **Joel Thomas** (PES1UG24CS203) | Case status filter for keyword and semantic search (API + UI); view `v_lawyer_workload` with `/api/workload` and the admin workload table; `FOR UPDATE` row lock in the assignment trigger to stop concurrent over-assignment; ER diagram; documentation, testing and screenshots |
